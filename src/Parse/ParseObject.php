@@ -90,6 +90,7 @@ class ParseObject implements Encodable
     if (!$className && $subclass !== false) {
       $className = $subclass;
     }
+    
     if ($class !== __CLASS__ && $className !== $subclass) {
       throw new Exception(
         'You must specify a Parse class name or register the appropriate ' .
@@ -98,7 +99,7 @@ class ParseObject implements Encodable
       );
     }
 
-    $this->className = $className;
+    $this->className = static::getParseClassName();
     $this->serverData = array();
     $this->operationSet = array();
     $this->estimatedData = array();
@@ -116,7 +117,24 @@ class ParseObject implements Encodable
    */
   private static function getSubclass()
   {
-    return array_search(get_called_class(), self::$registeredSubclasses);
+    $subclass = array_search(get_called_class(), self::$registeredSubclasses);
+    if($subclass !== null) {
+      return $subclass;  
+    }
+    if(array_key_exists(static::$parseClassName, self::$registeredSubclasses)) {
+        return self::$registeredSubclasses[static::$parseClassName];
+    } 
+  }
+
+  /**
+   * get the parse class name if exists, otherwise return the subclass name
+   */
+  private static function getParseClassName()
+  {
+    if(array_key_exists(static::$parseClassName, self::$registeredSubclasses)) {
+      return static::$parseClassName;
+    } 
+    return static::getSubclass();
   }
 
   /**
