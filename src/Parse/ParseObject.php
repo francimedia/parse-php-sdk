@@ -118,7 +118,7 @@ class ParseObject implements Encodable
   private static function getSubclass()
   {
     $subclass = array_search(get_called_class(), self::$registeredSubclasses);
-    if($subclass !== null) {
+    if($subclass !== false) {
       return $subclass;  
     }
     if(array_key_exists(static::$parseClassName, self::$registeredSubclasses)) {
